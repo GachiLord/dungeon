@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>Dark Dungeon</title>
+  <link rel="icon" type="image/x-icon" href="dist/favicon.ico">
   <link href="dist/rpgui.css" rel="stylesheet" type="text/css">
   <script src="dist/rpgui.js"></script>
   <script src="dist/htmx.js"></script>
@@ -13,12 +14,30 @@
 
 <body style="background: #222;">
   <div id="app" class="rpgui-content rpgui-cursor-default">
-    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-      <div class="rpgui-container framed">
-        <p>Добро пожаловать в подземелье!</p>
+    {% block app %}
+    {% endblock app %}
+
+    <div id="dialog">
+
+      <div id="dialog-character">
+        <img src="{% block characterImage %}{% endblock characterImage %}"
+          style="height: 30%; position: absolute; bottom: 15%; left: 20px;">
+        <div style="position: absolute; bottom: 15%; left: 50px; ">
+          <h1 style="color: #ff0;">{% block characterName %}{% endblock characterName %}</h1>
+        </div>
       </div>
+
+      <div id="dialog-text" class="rpgui-container framed"
+        style="bottom: 0; width: 100%; height: 15%; overflow: hidden; text-overflow: ellipsis;"
+        onclick="nextLine({% block dialogCallback %}{% endblock dialogCallback %})">
+        {% block dialogText %}
+        {% endblock dialogText %}
+      </div>
+
     </div>
+
   </div>
+
 </body>
 
 </html>
