@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
+  <!-- signup form --!>
+  <form id="signup-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 400px; display: none;">
+    <input type="text" placeholder="Потустороннее имя" style="margin-bottom: 10px" name="login" required>
+    <input type="text" placeholder="Земное имя" style="margin-bottom: 10px" name="name" required>
+    <input type="password" placeholder="Секретный ключ заклинателя" style="margin-bottom: 10px" name="secret" required>
+    <input type="password" placeholder="Тайное слово" style="margin-bottom: 10px" name="password" required>
+    <button class="rpgui-button" type="submit"><p>Войти</p></button>
+  </form>
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Таинственный маг
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/magician.png
+{% endblock characterImage %}
+
+<!-- callback --!>
+{% block dialogCallback %}
+() => showElementById('signup-form')
+{% endblock dialogCallback %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Давай же свяжем твою падшую душу с темными силами подземелья во имя предков и древних богов! Надеюсь ты не забыл священное слово заклинателя - без него тебе делать тут нечего.</p>
+<p style="display: none">Давай я тебе быстро все растолкую. Потустороннее имя используется для входа в подземелье и для обращения к тебе. Земное имя упоминается нечасто, но иногда бывает полезно знать, кем ты был до путешествия.</p>
+<p style="display: none">Секретный ключ передается авантюристу от заклинателя для первой вылазки в подземелье, его можно использовать только один раз.</p>
+<p style="display: none">И, наконец, последний артефакт, тайное слово, помогает защищаться от существ, крадущих твое имя, облик и голос;
+оно должно состоять минимум из 8 символов(строчные и заглавные буквы, цифры и знаки безумия Луны(#;: и т.д.)).
+</p>
+<p style="display: none">Надеюсь ты готов...</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}

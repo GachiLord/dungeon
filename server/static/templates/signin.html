@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
+  <!-- login form --!>
+  <form id="login-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 350px; ">
+    <input type="text" placeholder="Потусторонне имя" style="margin-bottom: 10px" name="login" required>
+    <input type="password" placeholder="Тайное слово" style="margin-bottom: 10px" name="password" required>
+    <button class="rpgui-button" type="submit"><p>Войти</p></button>
+  </form>
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Таинственный маг
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/magician.png
+{% endblock characterImage %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Поклянись на священном пергаменте, что достоин называться потомком тьмы. Впиши свое потустороннее имя и тайное слово в предоставленные судьбой поля.</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}
