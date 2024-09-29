@@ -1,6 +1,7 @@
 use api::api;
 use axum::Router;
 use lazy_static::lazy_static;
+use libs::db::{init_db, PoolWrapper};
 use std::env;
 use tera::Tera;
 
@@ -24,18 +25,19 @@ lazy_static! {
 struct AppState {
     // TODO: task queue for AI
     //
-    // TODO pool: &'static PoolWrapper,
+    pool: &'static PoolWrapper,
     template: &'static Tera,
 }
 
 #[tokio::main]
 async fn main() {
     // db
-    // TODO connect to db
+    let pool = init_db().await;
     // templates
     let tera = Tera::new(&format!("{}/templates/**/*", *STATIC_PATH)).unwrap();
     // app state
     let state = AppState {
+        pool,
         template: Box::leak(Box::new(tera)),
     };
     // launch server
