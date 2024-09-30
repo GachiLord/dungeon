@@ -1,0 +1,20 @@
+<header
+  style="top: 10px;position: absolute;display: flex;justify-content: space-around;width: 75%;flex-wrap: wrap; overflow: auto; max-height: 15%;">
+  <a href="/tasks"><button class="rpgui-button golden" type="button">
+      <p>Доска заданий</p>
+    </button>
+  </a>
+  <a href="/">
+    <button class="rpgui-button golden" type="button">
+      <p>Таверна</p>
+    </button>
+  </a>
+  <a href="/profile">
+    <button class="rpgui-button golden" type="button">
+      <p>Убежище</p>
+    </button>
+  </a>
+  <button hx-post="/api/auth/logout" hx-target="#dialog-text" class="rpgui-button golden" type="button">
+    <p>Выйти</p>
+  </button>
+</header>

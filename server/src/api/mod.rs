@@ -3,9 +3,12 @@ use axum::Router;
 
 mod auth;
 mod pages;
+mod token;
 
 pub fn api(state: AppState) -> Router<AppState> {
-    let api = Router::new().nest("/auth", auth::router());
+    let api = Router::new()
+        .nest("/auth", auth::router())
+        .nest("/token", token::router());
 
     Router::new()
         .nest("/", pages::router())
