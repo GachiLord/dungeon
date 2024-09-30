@@ -5,7 +5,7 @@
 <div
   style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
   <!-- signup form --!>
-  <form id="signup-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 400px; display: none;">
+  <form id="signup-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 400px; display: none;" action="/api/auth/signup" method="post">
     <input type="text" placeholder="Потустороннее имя" style="margin-bottom: 10px" name="login" required>
     <input type="text" placeholder="Земное имя" style="margin-bottom: 10px" name="name" required>
     <input type="password" placeholder="Секретный ключ заклинателя" style="margin-bottom: 10px" name="secret" required>

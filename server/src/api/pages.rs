@@ -12,9 +12,9 @@ use crate::{AppState, STATIC_PATH};
 pub fn router() -> Router<AppState> {
     Router::new()
         .nest_service("/dist", ServeDir::new(format!("{}/dist", *STATIC_PATH)))
-        .route("/", get(index))
+        .route("/welcome", get(index))
         .route("/signin", get(signin))
-        .route("/signout", get(signout))
+        .route("/signup", get(signout))
 }
 
 async fn index(State(state): State<AppState>) -> impl IntoResponse {
@@ -33,7 +33,7 @@ async fn signin(State(state): State<AppState>) -> impl IntoResponse {
 
 async fn signout(State(state): State<AppState>) -> impl IntoResponse {
     let ctx = Context::new();
-    let r = state.template.render("signout.html", &ctx).unwrap();
+    let r = state.template.render("signup.html", &ctx).unwrap();
 
     Html::from(r)
 }

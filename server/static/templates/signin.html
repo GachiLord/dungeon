@@ -5,7 +5,7 @@
 <div
   style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
   <!-- login form --!>
-  <form id="login-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 350px; ">
+  <form id="login-form" class="rpgui-container framed-golden-2 rpgui-center" style="max-width: 350px;" action="/api/auth/signin" method="post">
     <input type="text" placeholder="Потусторонне имя" style="margin-bottom: 10px" name="login" required>
     <input type="password" placeholder="Тайное слово" style="margin-bottom: 10px" name="password" required>
     <button class="rpgui-button" type="submit"><p>Войти</p></button>

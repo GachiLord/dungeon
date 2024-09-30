@@ -57,5 +57,4 @@ CREATE TABLE IF NOT EXISTS expired_invite_tokens (
     expire_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
-CREATE INDEX IF NOT EXISTS jwt_data_idx ON expired_jwts USING HASH (jwt_data);
-
+CREATE INDEX IF NOT EXISTS token_idx ON expired_invite_tokens USING HASH (token);

@@ -17,7 +17,7 @@ services:
       db:
         condition: service_healthy
   db:
-    container_name: board4you-db
+    container_name: dungeon-db
     image: postgres:16
     restart: always
     environment:
