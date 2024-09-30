@@ -9,6 +9,7 @@ use tera::Context;
 use tower_http::services::ServeDir;
 
 use crate::{
+    entities::task,
     libs::auth::{AuthSession, Backend},
     AppState, STATIC_PATH,
 };
@@ -36,11 +37,17 @@ async fn index(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 async fn profile(auth_session: AuthSession, State(state): State<AppState>) -> impl IntoResponse {
+    let u = &auth_session.user.unwrap();
+    let total = task::get_count(&state.pool.try_get().await.unwrap(), u.id)
+        .await
+        .unwrap_or(-1);
+
     let mut ctx = Context::new();
-    ctx.insert("user", &auth_session.user.unwrap());
+    ctx.insert("completed_tasks", &total);
+    ctx.insert("user", &u);
     let r = state.template.render("shelter.html", &ctx).unwrap();
 
-    Html::from(r)
+    Html::from(r).into_response()
 }
 
 async fn guide_start(State(state): State<AppState>) -> impl IntoResponse {
