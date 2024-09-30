@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use axum::{
     extract::{Query, State},
-    http::StatusCode,
-    response::{IntoResponse, Redirect},
+    http::{HeaderMap, HeaderValue, StatusCode},
+    response::{Html, IntoResponse, Redirect},
     routing::post,
     Form, Json, Router,
 };
@@ -40,7 +40,8 @@ async fn signup(
     if let Ok(v) = user::exists(&db_client, &payload.login).await {
         // check if login exists
         if v {
-            return StatusCode::BAD_REQUEST.into_response();
+            return Html::from("<p>Такое имя уже принадлежит другому авантюристу</p>")
+                .into_response();
         }
         let hash = tokio::task::spawn_blocking(move || {
             generate_hash(payload.password.as_bytes()).into_boxed_str()
@@ -56,15 +57,15 @@ async fn signup(
             is_admin: false,
         };
         if let Ok(created_user) = user::create(&db_client, u).await {
-            if let Err(_) = auth_session.login(&created_user).await {
-                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            if let Ok(_) = auth_session.login(&created_user).await {
+                let mut r = Html::from("").into_response();
+                r.headers_mut()
+                    .insert("HX-Redirect", HeaderValue::from_static("/guideStart"));
+                return r;
             }
-            return Redirect::to("/welcome").into_response();
         }
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
-
-    StatusCode::INTERNAL_SERVER_ERROR.into_response()
+    return Html::from("<p>Неожиданная ошибка судьбы</p>").into_response();
 }
 
 async fn signin(
@@ -73,16 +74,22 @@ async fn signin(
 ) -> impl IntoResponse {
     let user = match auth_session.authenticate(creds.clone()).await {
         Ok(Some(user)) => user,
-        Ok(None) => return StatusCode::UNAUTHORIZED.into_response(),
-        Err(e) => {
-            dbg!(e);
-            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        Ok(None) => {
+            return Html::from("<p>Такого имени не существует или тайное слово - ложно</p>")
+                .into_response()
+        }
+        Err(_) => {
+            return Html::from("<p>Такого имени не существует или тайное слово - ложно</p>")
+                .into_response();
         }
     };
 
-    if auth_session.login(&user).await.is_err() {
-        return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+    if let Err(_) = auth_session.login(&user).await {
+        return Html::from("<p>Неожиданная ошибка судьбы</p>").into_response();
     }
 
-    Redirect::to("/").into_response()
+    let mut r = Html::from("").into_response();
+    r.headers_mut()
+        .insert("HX-Redirect", HeaderValue::from_static("/"));
+    r
 }
