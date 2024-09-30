@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/shelter.jpg') no-repeat; background-size: cover;">
+  <{% include "header.html" %}
+  <div class="rpgui-container framed-golden" style="min-width: 50%;">
+      <h1>Магическая грамота авантюриста</h1>
+
+      <hr>
+
+      <p>Земное имя: {{ user.name }}</p>
+      <p>Потустороннее имя: {{ user.login }}</p>
+      <p>Класс авантюриста: {{ user.class }}</p>
+      <p>Количество выполненых заказов: {{ 0 }}</p>
+      <p>Рейтинг среди авантюристов своего класса: {{ 1 }}</p>
+
+      {% if user.is_admin %}
+      <hr>
+      <div class="rpgui-center">
+        <button hx-post="/" hx-target="#dialog-text" class="rpgui-button golden" type="button">
+          <p>Пригласить авантюриста</p>
+        </button>
+      </div>
+      {% endif %}
+  </div>
+
+</div>
+
+{% block characterImage %}
+dist/player.png
+{% endblock characterImage %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Вы входите в свое убежище, которое, кажется, никто не прибирал годами за исключением самых отважных авантюристов которые, к несчастью, куда-то подевались...</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}

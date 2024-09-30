@@ -1,11 +1,9 @@
-use std::collections::HashMap;
-
 use axum::{
-    extract::{Query, State},
-    http::{HeaderMap, HeaderValue, StatusCode},
-    response::{Html, IntoResponse, Redirect},
+    extract::State,
+    http::HeaderValue,
+    response::{Html, IntoResponse},
     routing::post,
-    Form, Json, Router,
+    Form, Router,
 };
 use password_auth::generate_hash;
 use serde::Deserialize;
@@ -20,6 +18,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/signup", post(signup))
         .route("/signin", post(signin))
+        .route("/logout", post(logout))
 }
 
 #[derive(Deserialize)]
@@ -92,4 +91,16 @@ async fn signin(
     r.headers_mut()
         .insert("HX-Redirect", HeaderValue::from_static("/"));
     r
+}
+
+pub async fn logout(mut auth_session: AuthSession) -> impl IntoResponse {
+    match auth_session.logout().await {
+        Ok(_) => {
+            let mut r = Html::from("").into_response();
+            r.headers_mut()
+                .insert("HX-Redirect", HeaderValue::from_static("/welcome"));
+            r
+        }
+        Err(_) => Html::from("<p>Неожиданная ошибка судьбы</p>").into_response(),
+    }
 }
