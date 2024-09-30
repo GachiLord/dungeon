@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Мэрлин Дакрвундер
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/magician.png
+{% endblock characterImage %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Кхм-Кхм... О взайдуд же колосья и да наполнятся лесные реки, ведь сегодня простой смертный принял тьму подземелья в свое сердце!</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}
