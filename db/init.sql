@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
     password varchar(97) NOT NULL,
     class smallint NOT NULL,
     CHECK (class >= 0 AND class <=3),
-    is_admin boolean NOT NULL
+    is_admin boolean NOT NULL,
+    tags text[] DEFAULT '{}'
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS id_idx ON users(id);
@@ -18,11 +19,14 @@ CREATE TABLE IF NOT EXISTS tasks (
   expected_time real NOT NULL,
   CHECK (expected_time > 0),
   tags text[] NOT NULL,
-  created_at timestamp DEFAULT CURRENT_TIMESTAMP
+  description varchar(1000) NOT NULL, 
+  assigned_to INT DEFAULT NULL,       
+  CONSTRAINT fk_users
+    FOREIGN KEY(assigned_to) 
+	    REFERENCES users(id)
+	    ON DELETE SET NULL
 );
 
-ALTER TABLE tasks
-  ADD COLUMN IF NOT EXISTS description varchar(1000) NOT NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS id_idx ON tasks(id);
 
@@ -42,7 +46,7 @@ CREATE TABLE IF NOT EXISTS completed_tasks (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS task_id_idx ON completed_tasks(task_id);
-CREATE UNIQUE INDEX IF NOT EXISTS user_id_idx ON completed_tasks(user_id);
+CREATE INDEX IF NOT EXISTS user_id_idx ON completed_tasks(user_id);
 
 
 CREATE TABLE IF NOT EXISTS invite_tokens (

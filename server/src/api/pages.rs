@@ -1,7 +1,7 @@
 use axum::{
     extract::State,
     response::{Html, IntoResponse},
-    routing::get,
+    routing::{get, on},
     Router,
 };
 use axum_login::login_required;
@@ -17,6 +17,7 @@ use crate::{
 pub fn router() -> Router<AppState> {
     let protected = Router::new()
         .route("/", get(index))
+        .route("/tasks", get(tasks))
         .route("/profile", get(profile))
         .route("/guideStart", get(guide_start))
         .route_layer(login_required!(Backend, login_url = "/welcome"));
@@ -32,6 +33,24 @@ pub fn router() -> Router<AppState> {
 async fn index(State(state): State<AppState>) -> impl IntoResponse {
     let ctx = Context::new();
     let r = state.template.render("inn.html", &ctx).unwrap();
+
+    Html::from(r)
+}
+
+async fn tasks(auth_session: AuthSession, State(state): State<AppState>) -> impl IntoResponse {
+    let u = &auth_session.user.unwrap();
+    let db_client = state.pool.try_get().await.unwrap();
+
+    let mut ctx = Context::new();
+    ctx.insert("user", &u);
+    if let Ok(tasks) = task::get_available(&db_client).await {
+        ctx.insert("tasks", &tasks);
+    }
+    if let Ok(tasks) = task::get_assigned(&db_client, u.id).await {
+        ctx.insert("tasks_in_progress", &tasks);
+    }
+
+    let r = state.template.render("questBoard.html", &ctx).unwrap();
 
     Html::from(r)
 }
