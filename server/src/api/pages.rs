@@ -1,7 +1,7 @@
 use axum::{
     extract::State,
     response::{Html, IntoResponse},
-    routing::{get, on},
+    routing::get,
     Router,
 };
 use axum_login::login_required;
@@ -9,7 +9,10 @@ use tera::Context;
 use tower_http::services::ServeDir;
 
 use crate::{
-    entities::task,
+    entities::{
+        task,
+        user::{self, Class},
+    },
     libs::auth::{AuthSession, Backend},
     AppState, STATIC_PATH,
 };
@@ -30,8 +33,18 @@ pub fn router() -> Router<AppState> {
         .nest("/", protected)
 }
 
-async fn index(State(state): State<AppState>) -> impl IntoResponse {
-    let ctx = Context::new();
+async fn index(auth_session: AuthSession, State(state): State<AppState>) -> impl IntoResponse {
+    let u = &auth_session.user.unwrap();
+    let db_client = state.pool.try_get().await.unwrap();
+    let mut ctx = Context::new();
+
+    if let Ok(users) = user::top_players(&db_client).await {
+        ctx.insert("top_users", &users);
+    }
+    if let Ok(users) = user::top_players_by_class(&db_client, u.class).await {
+        ctx.insert("top_class_users", &users);
+    }
+
     let r = state.template.render("inn.html", &ctx).unwrap();
 
     Html::from(r)
