@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS tasks (
   created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE tasks
+  ADD COLUMN IF NOT EXISTS description varchar(1000) NOT NULL;
+
 CREATE UNIQUE INDEX IF NOT EXISTS id_idx ON tasks(id);
 
 
@@ -42,19 +45,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS task_id_idx ON completed_tasks(task_id);
 CREATE UNIQUE INDEX IF NOT EXISTS user_id_idx ON completed_tasks(user_id);
 
 
-CREATE TABLE IF NOT EXISTS expired_jwts (
-	  id SERIAL PRIMARY KEY,
-	  jwt_data VARCHAR (500) NOT NULL,
-    expire_date DATE NOT NULL DEFAULT CURRENT_DATE
-);
-
-CREATE INDEX IF NOT EXISTS jwt_data_idx ON expired_jwts USING HASH (jwt_data);
-
-
-CREATE TABLE IF NOT EXISTS expired_invite_tokens (
+CREATE TABLE IF NOT EXISTS invite_tokens (
 	  id SERIAL PRIMARY KEY,
 	  token VARCHAR (500) NOT NULL,
-    expire_date DATE NOT NULL DEFAULT CURRENT_DATE
+    is_expired bool NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS token_idx ON expired_invite_tokens USING HASH (token);
+CREATE INDEX IF NOT EXISTS token_idx ON invite_tokens USING HASH (token);

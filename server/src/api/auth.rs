@@ -1,17 +1,15 @@
-use std::collections::HashMap;
-
 use axum::{
-    extract::{Query, State},
-    http::{HeaderMap, HeaderValue, StatusCode},
-    response::{Html, IntoResponse, Redirect},
+    extract::State,
+    http::HeaderValue,
+    response::{Html, IntoResponse},
     routing::post,
-    Form, Json, Router,
+    Form, Router,
 };
 use password_auth::generate_hash;
 use serde::Deserialize;
 
 use crate::{
-    entities::user,
+    entities::{invite, user},
     libs::auth::{AuthSession, Credentials},
     AppState,
 };
@@ -20,6 +18,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/signup", post(signup))
         .route("/signin", post(signin))
+        .route("/logout", post(logout))
 }
 
 #[derive(Deserialize)]
@@ -35,8 +34,17 @@ async fn signup(
     State(state): State<AppState>,
     Form(payload): Form<UserRegisterData>,
 ) -> impl IntoResponse {
-    // TODO: verity invite token
     let db_client = state.pool.try_get().await.unwrap();
+    // verity invite token
+    let expired = match invite::is_expired(&db_client, &payload.secret).await {
+        Ok(v) => v,
+        Err(_) => return Html::from("<p>Священное слово заклинателя - ложно</p>").into_response(),
+    };
+    if expired {
+        return Html::from("<p>Священное слово заклинателя уже было использовано</p>")
+            .into_response();
+    }
+    // try to create user
     if let Ok(v) = user::exists(&db_client, &payload.login).await {
         // check if login exists
         if v {
@@ -58,6 +66,9 @@ async fn signup(
         };
         if let Ok(created_user) = user::create(&db_client, u).await {
             if let Ok(_) = auth_session.login(&created_user).await {
+                // expire the invite token
+                let _ = invite::expire(&db_client, &payload.secret).await;
+                // redirect to index
                 let mut r = Html::from("").into_response();
                 r.headers_mut()
                     .insert("HX-Redirect", HeaderValue::from_static("/guideStart"));
@@ -92,4 +103,16 @@ async fn signin(
     r.headers_mut()
         .insert("HX-Redirect", HeaderValue::from_static("/"));
     r
+}
+
+pub async fn logout(mut auth_session: AuthSession) -> impl IntoResponse {
+    match auth_session.logout().await {
+        Ok(_) => {
+            let mut r = Html::from("").into_response();
+            r.headers_mut()
+                .insert("HX-Redirect", HeaderValue::from_static("/welcome"));
+            r
+        }
+        Err(_) => Html::from("<p>Неожиданная ошибка судьбы</p>").into_response(),
+    }
 }

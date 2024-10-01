@@ -1,9 +1,23 @@
+async function setClipboard(text) {
+  const type = "text/plain";
+  const blob = new Blob([text], { type });
+  const data = [new ClipboardItem({ [type]: blob })];
+  await navigator.clipboard.write(data);
+}
+
+
 function showElementById(id) {
   document.getElementById(id).style.display = "block"
 }
 
 function showChoice() {
   document.getElementById("choice").style.display = "block";
+}
+
+async function inviteUser() {
+  const r = await fetch("/api/token", { method: "POST" });
+  let b = await r.json();
+  setClipboard(b.token);
 }
 
 function nextLine(callback) {

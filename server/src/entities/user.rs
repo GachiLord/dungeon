@@ -1,4 +1,4 @@
-use tokio_postgres::GenericClient;
+use serde::{Serialize, Serializer};
 
 use crate::libs::db::DbClient;
 
@@ -7,6 +7,19 @@ pub enum Class {
     C,
     B,
     A,
+}
+
+impl Serialize for Class {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(match self {
+            Class::C => "C",
+            Class::B => "B",
+            Class::A => "A",
+        })
+    }
 }
 
 impl From<i16> for Class {
@@ -30,7 +43,7 @@ impl Into<i16> for Class {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct User {
     pub id: i32,
     pub login: Box<str>,
