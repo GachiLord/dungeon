@@ -5,6 +5,29 @@
 <div
   style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/inn.avif') no-repeat; background-size: cover;">
   <{% include "header.html" %}
+  <!-- leaderboard --!>
+  <div style="top: 15%; bottom: 20%; position: absolute; display: flex; justify-content: space-evenly; flex-wrap: wrap; overflow: auto;">
+  <div class="rpgui-container framed-golden" style="position: relative; margin: 5px">
+    <h1>Лучшие авантюристы</h1>
+      <hr>
+      {% for user in top_users %}
+        <p>Земное имя: <font color="#ff0">{{ user.name }}</font></p>
+        <p>Потустороннее имя: <font color="#ff0">{{ user.login }}</font></p>
+        <p>Класс авантюриста: <font color="#ff0">{{ user.class }}</font></p>
+      <hr>
+      {% endfor %}
+  </div>
+  <div class="rpgui-container framed-golden" style="position: relative; margin: 5px">
+    <h1>Лучшие авантюристы вашего класса</h1>
+      <hr>
+      {% for user in top_class_users %}
+        <p>Земное имя: <font color="#ff0">{{ user.name }}</font></p>
+        <p>Потустороннее имя: <font color="#ff0">{{ user.login }}</font></p>
+        <p>Класс авантюриста: <font color="#ff0">{{ user.class }}</font></p>
+      <hr>
+      {% endfor %}
+  </div>
+  </div>
 </div>
 
 <!-- character --!>
@@ -18,7 +41,7 @@ dist/innkeeper.png
 
 <!-- lines --!>
 {% block dialogText %}
-<p>О, приветствую тебя, мой друг! Давно не виделись, ладно не стесняйся, присаживайся. Будь как дома, путник. Сейчас такое расскажу...</p>
+<p>О, приветствую тебя, мой друг! Давно не виделись, ладно не стесняйся, присаживайся. Будь как дома - я ни в чем не откажу...</p>
 {% endblock dialogText %}
 
 

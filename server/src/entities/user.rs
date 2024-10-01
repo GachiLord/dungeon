@@ -164,6 +164,38 @@ pub async fn get_by_login(
     })
 }
 
+pub async fn top_players(db_client: &DbClient<'_>) -> Result<Vec<User>, tokio_postgres::Error> {
+    let users = db_client.query("SELECT * FROM users ORDER BY (SELECT COUNT(*) FROM completed_tasks WHERE user_id = users.id) DESC LIMIT 10", &[]).await.unwrap().into_iter().map(|row| User {
+        id: row.get("id"),
+        login: row.get("login"),
+        name: row.get("name"),
+        pw_hash: row.get("password"),
+        class: row.get::<&str, i16>("class").into(),
+        is_admin: row.get("is_admin"),
+        tags: row.get("tags"),
+    }).collect();
+
+    Ok(users)
+}
+
+pub async fn top_players_by_class(
+    db_client: &DbClient<'_>,
+    class: Class,
+) -> Result<Vec<User>, tokio_postgres::Error> {
+    let c: i16 = class.into();
+    let users = db_client.query("SELECT * FROM users WHERE class = $1 ORDER BY (SELECT COUNT(*) FROM completed_tasks WHERE user_id = users.id) DESC LIMIT 10", &[&c]).await.unwrap().into_iter().map(|row| User {
+        id: row.get("id"),
+        login: row.get("login"),
+        name: row.get("name"),
+        pw_hash: row.get("password"),
+        class: row.get::<&str, i16>("class").into(),
+        is_admin: row.get("is_admin"),
+        tags: row.get("tags"),
+    }).collect();
+
+    Ok(users)
+}
+
 pub async fn calibrate_class(
     db_client: &DbClient<'_>,
     user_id: i32,
