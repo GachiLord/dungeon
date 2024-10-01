@@ -5,6 +5,20 @@ async function setClipboard(text) {
   await navigator.clipboard.write(data);
 }
 
+function isNumberKey(evt) {
+  var charCode = (evt.which) ? evt.which : evt.keyCode
+  if (charCode > 31 && (charCode < 48 || charCode > 57))
+    return false;
+  return true;
+}
+
+function setTaskActive(el) {
+  el.closest(".rpgui-container").children[0].style.display = "block";
+}
+
+function setTaskInactive(el) {
+  el.closest(".rpgui-container").children[0].style.display = "none";
+}
 
 function showElementById(id) {
   document.getElementById(id).style.display = "block"

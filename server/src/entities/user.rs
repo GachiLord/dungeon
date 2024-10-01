@@ -1,12 +1,31 @@
-use serde::{Serialize, Serializer};
+use std::fmt::{self, Display};
+
+use serde::{
+    de::{self, Visitor},
+    Deserialize, Serialize, Serializer,
+};
+use tokio::join;
 
 use crate::libs::db::DbClient;
 
-#[derive(Debug, Clone, Copy)]
+use super::task;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Class {
     C,
     B,
     A,
+}
+
+impl Display for Class {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let l = match self {
+            Class::C => "C",
+            Class::B => "B",
+            Class::A => "A",
+        };
+        f.write_str(l)
+    }
 }
 
 impl Serialize for Class {
@@ -19,6 +38,37 @@ impl Serialize for Class {
             Class::B => "B",
             Class::A => "A",
         })
+    }
+}
+
+struct ClassVisitor;
+
+impl<'de> Visitor<'de> for ClassVisitor {
+    type Value = Class;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("an integer between 0 and 3")
+    }
+
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        match v.as_str() {
+            "C" => Ok(Class::C),
+            "B" => Ok(Class::B),
+            "A" => Ok(Class::A),
+            _ => Err(E::custom("value must be one of A, B, C")),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Class {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_string(ClassVisitor)
     }
 }
 
@@ -51,6 +101,7 @@ pub struct User {
     pub pw_hash: Box<str>,
     pub class: Class,
     pub is_admin: bool,
+    pub tags: Vec<Box<str>>,
 }
 
 pub async fn create(db_client: &DbClient<'_>, user: User) -> Result<User, tokio_postgres::Error> {
@@ -66,6 +117,7 @@ pub async fn create(db_client: &DbClient<'_>, user: User) -> Result<User, tokio_
         pw_hash: u.get("password"),
         class: u.get::<&str, i16>("class").into(),
         is_admin: u.get("is_admin"),
+        tags: u.get("tags"),
     })
 }
 
@@ -89,6 +141,7 @@ pub async fn get(db_client: &DbClient<'_>, id: i32) -> Result<User, tokio_postgr
         pw_hash: u.get("password"),
         class: u.get::<&str, i16>("class").into(),
         is_admin: u.get("is_admin"),
+        tags: u.get("tags"),
     })
 }
 
@@ -107,16 +160,52 @@ pub async fn get_by_login(
         pw_hash: u.get("password"),
         class: u.get::<&str, i16>("class").into(),
         is_admin: u.get("is_admin"),
+        tags: u.get("tags"),
     })
+}
+
+pub async fn calibrate_class(
+    db_client: &DbClient<'_>,
+    user_id: i32,
+    user_class: Class,
+) -> Result<u64, tokio_postgres::Error> {
+    let (total, complexity) = join!(
+        task::get_count(db_client, user_id),
+        task::get_avg_complexity(db_client, user_id)
+    );
+
+    if total? % 10 != 0 {
+        return Ok(0);
+    }
+
+    let estimated_class = (complexity?.round() as i16).into();
+    if user_class != estimated_class {
+        return set_class(db_client, user_id, estimated_class).await;
+    }
+
+    Ok(0)
 }
 
 pub async fn set_class(
     db_client: &DbClient<'_>,
-    id: i64,
+    id: i32,
     class: Class,
 ) -> Result<u64, tokio_postgres::Error> {
     let class: i16 = class.into();
     db_client
         .execute("UPDATE users SET class = $1 WHERE id = $2", &[&class, &id])
+        .await
+}
+
+pub async fn add_tags(
+    db_client: &DbClient<'_>,
+    id: i32,
+    tags: Vec<Box<str>>,
+) -> Result<u64, tokio_postgres::Error> {
+    db_client
+        .execute(
+            "UPDATE users SET tags = (tags || $1) WHERE id = $2",
+            &[&tags, &id],
+        )
         .await
 }

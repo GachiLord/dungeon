@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  style="display: flex; justify-content: center; align-items: center; height: 100%; background: url('dist/quests.jpg') no-repeat; background-size: cover;">
+  <!-- header --!>
+  {% include "header.html" %}
+  <!-- taskbuilder --!>
+  
+  <div id="quest-board" style="top: 15%; bottom: 20%; position: absolute; display: flex; justify-content: space-evenly; flex-wrap: wrap; overflow: auto;">
+    {% if user.is_admin %}
+    <form class="rpgui-container framed" style="position: relative; margin: 5px; max-width: 600px; display: flex; flex-direction: column; justify-content: space-evenly;" hx-post="/api/task/edit" hx-target="#quest-board" hx-swap="beforeend" hx-on::after-request="this.reset()">
+      <h1>Создать задание</h1>
+      <hr>
+      <textarea name="description" placeholder="Описание задания" max-lenght="500" autocomplete="off" style="margin-bottom: 10px;" name="description" required></textarea>
+
+      <input type="text" placeholder="Тэги чeрез пробел" style="margin-bottom: 10px;" name="tags" autocomplete="off" required>
+
+      <div style="margin-bottom: 10px;">
+        <select class="rpgui-dropdown" data-rpguitype="dropdown" name="complexity">
+          <option value="2">Рекомендуемый класс авантюриста: A</option>
+          <option value="1">Рекомендуемый класс авантюриста: B</option>
+          <option value="0" selected>Рекомендуемый класс авантюриста: C</option>
+        </select>
+      </div>
+
+      <input type="text" placeholder="Ожидаемое время выполнения в часах" style="margin-bottom: 10px;" name="expected_time" autocomplete="off" inputmode="numeric" required onkeypress="return isNumberKey(event)">
+
+      <div class="rpgui-center">
+        <button class="rpgui-button" type="submit"><p>Создать задание</p></button>
+      </div>
+    </form>
+    {% endif %}
+
+    <!-- ai suggestion --!>
+
+    <!-- tasks in progress --!>
+
+    {% for task in tasks_in_progress %}
+    <div class="rpgui-container framed-golden" style="position: relative; max-width: 600px; display: flex; flex-direction: column; justify-content: space-evenly; margin: 5px;">
+      <h1 style="color: #ff0; display: block;">Выполняется</h1>
+      <p>Тэги: <font color="#ff0">{{ task.tags }}</font></p>
+      <p>Рекомендуемый класс авантюриста: <font color="#ff0">{{ task.complexity }}</font></p>
+      <p>Ожидаемое время выполнения в часах: <font color="#ff0">{{ task.expected_time }}</font></p>
+      <div>
+        <hr>
+        <p style="line-break: normal;">{{ task.description }}</p>
+      </div>
+      <div class="rpgui-center" style="position: relative;">
+        <hr>
+        <button class='rpgui-button' type='button' hx-patch='/api/task/manage/complete/{{ task.id }}' hx-target='closest div' onclick='setTaskInactive(this)'><p>Завершить</p></button>
+        <button class='rpgui-button' type='button' hx-patch='/api/task/manage/resign/{{ task.id }}' hx-target='previous button' hx-swap='outerHTML' hx-on::before-request='this.remove()' onclick='setTaskInactive(this)'><p>Отказаться</p></button>
+        {% if user.is_admin %}
+        <button class="rpgui-button" type="button" hx-delete="/api/task/edit/{{ task.id }}" hx-target="closest div"><p>Удалить</p></button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- all tasks --!>
+
+    {% for task in tasks %}
+    <div class="rpgui-container framed-golden" style="position: relative; max-width: 600px; margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-evenly; margin: 5px;">
+      <h1 style="color: #ff0; display: none;">Выполняется</h1>
+      <p>Тэги: <font color="#ff0">{{ task.tags }}</font></p>
+      <p>Рекомендуемый класс авантюриста: <font color="#ff0">{{ task.complexity }}</font></p>
+      <p>Ожидаемое время выполнения в часах: <font color="#ff0">{{ task.expected_time }}</font></p>
+      <div>
+        <hr>
+        <p sytle="line-break: normal;">{{ task.description }}</p>
+      </div>
+      <div class="rpgui-center" style="position: relative;">
+        <hr>
+        <button class="rpgui-button" type="button" hx-patch="/api/task/manage/assign/{{ task.id }}" hx-target="this" hx-swap="outerHTML" onclick='setTaskActive(this)'><p>Принять</p></button>
+        {% if user.is_admin %}
+        <button class="rpgui-button" type="button" hx-delete="/api/task/edit/{{ task.id }}" hx-target="closest div"><p>Удалить</p></button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+
+</div>
+
+<!-- character --!>
+{% block characterImage %}
+dist/player.png
+{% endblock characterImage %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Вы подходите к слегка пыльной доске заданий и оценивающе глядите на ее потрепанный временем вид; она же, в свою очередь, зазывающим взглядом опытной женщины предлагает все, что у нее есть. 
+Про себя вы осторожно думаете: ну, как тут отказать...
+</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}

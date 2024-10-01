@@ -63,6 +63,7 @@ async fn signup(
             pw_hash: hash,
             class: user::Class::C,
             is_admin: false,
+            tags: vec![],
         };
         if let Ok(created_user) = user::create(&db_client, u).await {
             if let Ok(_) = auth_session.login(&created_user).await {

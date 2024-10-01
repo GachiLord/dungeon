@@ -10,16 +10,16 @@
 
       <hr>
 
-      <p>Земное имя: {{ user.name }}</p>
-      <p>Потустороннее имя: {{ user.login }}</p>
-      <p>Класс авантюриста: {{ user.class }}</p>
-      <p>Количество выполненых заказов: {{ 0 }}</p>
+      <p>Земное имя: <font color="#ff0">{{ user.name }}</font></p>
+      <p>Потустороннее имя: <font color="#ff0">{{ user.login }}</font></p>
+      <p>Класс авантюриста: <font color="#ff0">{{ user.class }}</font></p>
+      <p>Количество выполненых заказов: <font color="#ff0">{{ completed_tasks }}</font></p>
 
       {% if user.is_admin %}
       <hr>
       <div class="rpgui-center">
         <button class="rpgui-button golden" type="button" onclick="inviteUser()">
-          <p>Скопировать слово заклинателя</p>
+          <p>Скопировать приглашение</p>
         </button>
       </div>
       {% endif %}
