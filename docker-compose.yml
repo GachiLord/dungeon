@@ -1,21 +1,27 @@
 services:
   web:
-    container_name: board4you-server
-    build: .
+    container_name: dungeon-server
+    build:
+      dockerfile: ./Dockerfile-server
     restart: always
     command: ./server 
     environment:
       DB_HOST: db
       DB_PORT: "5432"
       DB_USER: "dungeon"
+      AI_HOST: "http://recommender:8080"
     ports:
-      - "3000:3000"
+      - "80:3000"
     secrets:
       - db_password
-      - jwt_secret
     depends_on:
       db:
         condition: service_healthy
+  recommender:
+    container_name: dungeon-recommender
+    build:
+      dockerfile: ./Dockerfile-recommender
+    restart: always
   db:
     container_name: dungeon-db
     image: postgres:16
@@ -40,5 +46,3 @@ services:
 secrets:
   db_password:
     file: ./db/db_password.txt
-  jwt_secret:
-    file: ./db/jwt_secret.txt
