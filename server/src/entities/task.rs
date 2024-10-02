@@ -176,7 +176,7 @@ pub async fn get_avg_duration(
 ) -> Result<f32, tokio_postgres::Error> {
     Ok(db_client
         .query_one(
-            "SELECT AVG(expected_time) FROM completed_tasks JOIN tasks ON user_id = $1",
+            "SELECT CAST(AVG(expected_time) AS REAL) FROM completed_tasks JOIN tasks ON user_id = $1",
             &[&user_id],
         )
         .await?
