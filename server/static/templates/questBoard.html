@@ -33,8 +33,6 @@
     </form>
     {% endif %}
 
-    <!-- ai suggestion --!>
-
     <!-- tasks in progress --!>
 
     {% for task in tasks_in_progress %}
@@ -61,7 +59,7 @@
     <!-- all tasks --!>
 
     {% for task in tasks %}
-    <div class="rpgui-container framed-golden" style="position: relative; max-width: 600px; margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-evenly; margin: 5px;">
+    <div class="rpgui-container {% if loop.index0 in recommended_indexes %}framed-golden-2{% else %}framed-golden{% endif %}" style="position: relative; max-width: 600px; margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-evenly; margin: 5px;">
       <h1 style="color: #ff0; display: none;">Выполняется</h1>
       <p>Тэги: <font color="#ff0">{{ task.tags }}</font></p>
       <p>Рекомендуемый класс авантюриста: <font color="#ff0">{{ task.complexity }}</font></p>

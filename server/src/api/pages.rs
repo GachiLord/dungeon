@@ -6,14 +6,15 @@ use axum::{
 };
 use axum_login::login_required;
 use tera::Context;
+use tokio::join;
 use tower_http::services::ServeDir;
 
 use crate::{
-    entities::{
-        task,
-        user::{self, Class},
+    entities::{task, user},
+    libs::{
+        ai,
+        auth::{AuthSession, Backend},
     },
-    libs::auth::{AuthSession, Backend},
     AppState, STATIC_PATH,
 };
 
@@ -58,8 +59,24 @@ async fn tasks(auth_session: AuthSession, State(state): State<AppState>) -> impl
     ctx.insert("user", &u);
     if let Ok(tasks) = task::get_available(&db_client).await {
         ctx.insert("tasks", &tasks);
+        // get recommended
+        let (time, complexity) = join!(
+            task::get_avg_duration(&db_client, u.id),
+            task::get_avg_complexity(&db_client, u.id)
+        );
+        let recommended_indexes = ai::get_recommended(
+            state.http_client,
+            complexity.unwrap_or(0.0),
+            time.unwrap_or(5.0),
+            u.tags.clone(),
+            &tasks,
+        )
+        .await
+        .unwrap_or(vec![]);
+        ctx.insert("recommended_indexes", &recommended_indexes);
     }
     if let Ok(tasks) = task::get_assigned(&db_client, u.id).await {
+        // get all
         ctx.insert("tasks_in_progress", &tasks);
     }
 

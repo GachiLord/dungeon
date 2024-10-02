@@ -25,14 +25,19 @@ lazy_static! {
 
         s
     };
+    pub static ref AI_HOST: &'static str = {
+        let s = &env::var("AI_HOST").unwrap_or("http://localhost:8080".to_owned());
+        let s: &'static str = s.clone().leak();
+
+        s
+    };
 }
 
 // app state
 
 #[derive(Clone)]
 struct AppState {
-    // TODO: task queue for AI
-    //
+    http_client: reqwest::Client,
     pool: &'static PoolWrapper,
     template: &'static Tera,
 }
@@ -47,6 +52,7 @@ async fn main() {
     let state = AppState {
         pool,
         template: Box::leak(Box::new(tera)),
+        http_client: reqwest::Client::new(),
     };
     // Session layer.
     let session_store = MemoryStore::default();
