@@ -17,7 +17,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         worker = data.get('worker')
         tasks = data.get('tasks')
 
-        recommendations = get_recommendations([worker], tasks)
+        recommendations = get_recommendations(worker, tasks)
 
         recommendations_serializable = self.make_serializable(recommendations)
 
