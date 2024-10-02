@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  class="rpgui-center"
+  style="min-height: 100%; background: url('dist/quests.jpg') no-repeat; background-size: cover;">
+    <!-- choose next page --!>
+    <div id="choice" class="rpgui-center" style="bottom: 20px; display: none">
+      <a href="/guideInn"><button class="rpgui-button" type="button"><p>Пойти в таверну</p></button></a>
+	  </div>
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Гадалка Пифия
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/frtune-teller.png
+{% endblock characterImage %}
+
+<!-- callback --!>
+{% block dialogCallback %}showChoice{% endblock dialogCallback %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Приветствую тебя, <font color="#ff0">{{ user.login }}</font>, или может быть лучше звать тебя <font color="#ff0">{{ user.name }}</font>? Не спрашивай, как я это сделала. Cкажем так, я знаю немного больше других.</p>
+<p style="display: none;">Дай угадаю, тебя Мэрлин послал? Что ж, он хоть и старый, но дело свое знает. Ладно, тогда слушай.</p>
+<p style="display: none;">Ты уже знаешь, что авантюристы здесь берут задания, чтобы прославиться и обрести могущество, но это лишь половина реальной картины.</p>
+<p style="display: none;">Чтобы выжить в этом подземелье, нужно выбирать задание по силам. Каждое задание имеет рекомендуемый класс авантюриста, время выполнения и специализацию.</p>
+<p style="display: none;">Нелегко, да? Вот почему я тут сижу. Каждый раз, когда ты будешь подходить к доске, на тебя будет действовать мое заклятье, которое подсвечивает наиболее подходящие задания.</p>
+<p style="display: none;">Будь внимателен и используй мои советы с умом. А теперь иди в таверну: тебя уже заждались.</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}

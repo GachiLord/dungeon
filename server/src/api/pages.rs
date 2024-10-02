@@ -24,6 +24,9 @@ pub fn router() -> Router<AppState> {
         .route("/tasks", get(tasks))
         .route("/profile", get(profile))
         .route("/guideStart", get(guide_start))
+        .route("/guideShelter", get(guide_shelter))
+        .route("/guideQuestboard", get(guide_quest_board))
+        .route("/guideInn", get(guide_inn))
         .route_layer(login_required!(Backend, login_url = "/welcome"));
 
     Router::new()
@@ -102,6 +105,33 @@ async fn profile(auth_session: AuthSession, State(state): State<AppState>) -> im
 async fn guide_start(State(state): State<AppState>) -> impl IntoResponse {
     let ctx = Context::new();
     let r = state.template.render("guideStart.html", &ctx).unwrap();
+
+    Html::from(r)
+}
+
+async fn guide_shelter(State(state): State<AppState>) -> impl IntoResponse {
+    let ctx = Context::new();
+    let r = state.template.render("guideShelter.html", &ctx).unwrap();
+
+    Html::from(r)
+}
+
+async fn guide_quest_board(
+    auth_session: AuthSession,
+    State(state): State<AppState>,
+) -> impl IntoResponse {
+    let u = &auth_session.user.unwrap();
+
+    let mut ctx = Context::new();
+    ctx.insert("user", u);
+    let r = state.template.render("guideQuestboard.html", &ctx).unwrap();
+
+    Html::from(r)
+}
+
+async fn guide_inn(State(state): State<AppState>) -> impl IntoResponse {
+    let ctx = Context::new();
+    let r = state.template.render("guideInn.html", &ctx).unwrap();
 
     Html::from(r)
 }

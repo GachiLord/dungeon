@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  class="rpgui-center"
+  style="min-height: 100%; background: url('dist/shelter.jpg') no-repeat; background-size: cover;">
+    <!-- choose next page --!>
+    <div id="choice" class="rpgui-center" style="bottom: 20px; display: none">
+      <a href="/guideQuestboard"><button class="rpgui-button" type="button"><p>Пойти к гадалке</p></button></a>
+	  </div>
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Мэрлин Дакрвандер
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/magician.png
+{% endblock characterImage %}
+
+<!-- callback --!>
+{% block dialogCallback %}showChoice{% endblock dialogCallback %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Такс, полюбуйся своим жилищем, знаю, это не харомы, но уж точно лучше любой общаги.</p>
+<p style="display: none;">Присыживайся, где хочешь, устравайся пока. Я пойду решу проблемы на рынке: там джеесеров кто-то из клетки выпустил - непорядок.</p>
+<p style="display: none;">Пока не забыл: сходи к Пифии, нашей местной гадалке, много нового про себя узнаешь. Она обычно у доски заданий стоит.
+</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}

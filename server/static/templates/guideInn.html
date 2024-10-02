@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block app %}
+
+<!-- background --!>
+<div
+  class="rpgui-center"
+  style="min-height: 100%; background: url('dist/inn.avif') no-repeat; background-size: cover;">
+    <!-- choose next page --!>
+    <div id="choice" class="rpgui-center" style="bottom: 20px; display: none">
+      <a href="/profile"><button class="rpgui-button" type="button"><p>Вернуться в убежище</p></button></a>
+	  </div>
+</div>
+
+<!-- character --!>
+{% block characterName %}
+Пьяный трактирщик
+{% endblock characterName %}
+
+{% block characterImage %}
+dist/innkeeper.png
+{% endblock characterImage %}
+
+<!-- callback --!>
+{% block dialogCallback %}showChoice{% endblock dialogCallback %}
+
+<!-- lines --!>
+{% block dialogText %}
+<p>Ха, привет, новенький! Как тебе моя таверна? О, не отвечай, знаю, ты под впечатлением.</p>
+<p style="display: none;">Меня, это, Уильям зовут, ну, или звали так. Сейчас ко мне все обращаются "Пьяный трактирщик". Эх...</p>
+<p style="display: none;">Не будем о грустном. Ты лучше скажи, знаешь ли ты про систему классов авантюристов? Как нет?</p>
+<p style="display: none;">Все очень просто: у каждого авантюриста есть класс A, B или C. Выполняя задания, твой класс может повыситься или понизиться, такое событие называется калибровкой.</p>
+<p style="display: none;">Калибровка поисходит каждые 10 выполненных заданий. По ее итогам твое имя попадает в таблицу лидеров, которую я вывешиваю здесь.</p>
+<p style="display: none;">Вот так все и происходит, если захочешь узнать о чужих успехах или неудачах, приходи ко мне.</p>
+{% endblock dialogText %}
+
+
+{% endblock app %}
