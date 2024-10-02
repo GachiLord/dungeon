@@ -33,7 +33,8 @@ docker compose up db web -d
 
 4. После успешного запуска, необходимо создать привелегированного пользователя(для отправки инвайтов), выполнив команду:
 ```bash
-docker compose exec db psql -U dungeon -W -c "insert into users (login, name, password, class, is_admin, tags) values('text', 'text', '$argon2i$v=19$m=32,t=3,p=4$c2FsdHNhbHQ$N5OSJjxpM+8ueBlykYlg/cGn8Nx8jMmGRew76u5w', 0, true, '{}');"
+
+docker compose exec db psql -U dungeon -W -c "insert into users (login, name, password, class, is_admin, tags) values('text', 'text', '\$argon2i\$v=19\$m=32,t=3,p=4\$c2FsdHNhbHQ\$N5OSJjxpM+8ueBlykYlg/cGn8Nx8jMmGRew76u5w', 0, true, '{}')"
 ```
 Эта команда создаст пользователя с логином text и паролем text. Если нужен другой пароль, сгенерируйте argon2-hash и вставьте вместо "$argon2i$v=19$m=32,t=3,p=4$c2FsdHNhbHQ$N5OSJjxpM+8ueBlykYlg/cGn8Nx8jMmGRew76u5w".
 
