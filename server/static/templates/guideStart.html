@@ -5,7 +5,10 @@
 <div
   class="rpgui-center"
   style="min-height: 100%; background: url('dist/dungeon-entrance.jpg') no-repeat; background-size: cover;">
-
+    <!-- choose next page --!>
+    <div id="choice" class="rpgui-center" style="bottom: 20px; display: none">
+      <a href="/guideShelter"><button class="rpgui-button" type="button"><p>Пойти за волшебником</p></button></a>
+	  </div>
 </div>
 
 <!-- character --!>
@@ -17,9 +20,17 @@
 dist/magician.png
 {% endblock characterImage %}
 
+<!-- callback --!>
+{% block dialogCallback %}showChoice{% endblock dialogCallback %}
+
 <!-- lines --!>
 {% block dialogText %}
-<p>Кхм-Кхм... О взайдуд же колосья и да наполнятся лесные реки, ведь сегодня простой смертный принял тьму подземелья в свое сердце!</p>
+<p>Кхм-Кхм... О взойдуд же колосья и да наполнятся лесные реки, ведь сегодня простой смертный принял тьму подземелья в свое сердце!</p>
+<p style="display: none;">Ладно, новоиспеченный авантюрист, сейчас растолкую, чем у нас тут занимаются.</p>
+<p style="display: none;">Темное подземелье - это опасное место, где отважные безумцы ищут приключения, выполняя задания, посланные им самой судьбой.
+Сперва ты будешь выполнять легкие задания, но потом твое тело и разум окрепнут, и ты сможешь достичь величия, которое тебе даже не снилось! 
+</p>
+<p style="display: none;">Ладно, давай я отведу тебя в место, где ты будешь жить. Ах, да, меня звать Мэрлин, будем теперь знакомы.</p>
 {% endblock dialogText %}
 
 
